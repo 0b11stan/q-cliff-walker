@@ -15,7 +15,10 @@ def cli():
 #@cli.option('--red', is_flag=True)
 def shell():
     app = Shell()
-    app.mainloop(True, False)
+    # blue
+    #app.mainloop(True, False)
+    # red
+    app.mainloop(False, True)
 
 
 @cli.command()

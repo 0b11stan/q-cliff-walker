@@ -1,6 +1,6 @@
 import numpy as np
 from enum import Enum
-from environment import Action
+from environment import Action, get_state
 
 
 class AI():
@@ -34,4 +34,4 @@ class AI():
             return Action.all()[np.argmax(self.qvalues[self.get_state()])]
 
     def get_state(self):
-        return environment.get_state(self.env.position, self.env.COLS)
+        return get_state(self.env.position, self.env.COLS)
