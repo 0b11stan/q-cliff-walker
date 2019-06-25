@@ -11,9 +11,11 @@ def cli():
 
 
 @cli.command()
-def shell():
+@cli.option('--blue', is_flag=True)
+@cli.option('--red', is_flag=True)
+def shell(blue, red):
     app = Shell()
-    app.mainloop()
+    app.mainloop(blue, red)
 
 
 @cli.command()

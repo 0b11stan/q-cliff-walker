@@ -1,7 +1,8 @@
 import os
 
 from environment import Map, Environment
-from redteam.ai import AI
+from redteam.ai import AI as RED
+from blueteam.ai import AI as BLUE
 
 
 class Shell():
@@ -16,7 +17,6 @@ class Shell():
             [Map.GOAL, Map.LAND,  Map.LAND,   Map.DANGER]
         ]
         self.env = Environment(self.landform)
-        self.ai = AI(self.env)
         self.position = [0, 0]
 
     def display(self, reward, action):
@@ -48,5 +48,10 @@ class Shell():
         print("reward: {}".format(reward))
         print("action: {}".format(action.name))
 
-    def mainloop(self):
-        self.ai.learn(100, self.display)
+    def mainloop(self, blue, red):
+        if blue:
+            print ("## BLUE ##")
+            BLUE(self.env).learn(100, self.display)
+        if red:
+            print ("## RED ##")
+            RED(self.env).learn(100, self.display)
