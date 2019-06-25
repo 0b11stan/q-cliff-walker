@@ -133,9 +133,9 @@ def get_flat_matrix(matrix):
 
 def get_next_action(state, flat_q_matrix, calculated_valid_actions_matrix, stepratio, random_choice_rate=0.1):
     if(stepratio <= 1.3):
-        random_choice_rate /= 4
+        random_choice_rate /= 8
     elif(stepratio <= 2 ):
-        random_choice_rate /= 2
+        random_choice_rate /= 4
     if(np.random.random() < random_choice_rate):
         return random.choice(calculated_valid_actions_matrix[state])
     else:

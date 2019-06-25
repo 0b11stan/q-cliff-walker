@@ -24,6 +24,8 @@ class Shell():
         self.episode_rewards = []
         self.step_tachometer = time.time()
         self.step_tachometers = []
+        self.deaths = 0
+        self.wins = 0
 
     def display(self, reward, action, done, title="## MAP ##"):
         os.system("clear")
@@ -33,9 +35,11 @@ class Shell():
         if(reward == Map.GOAL.get_reward()):
             self.episode_rewards.append([Map.GOAL.name, self.episode_reward])
             self.episode_reward = 0
+            self.wins += 1
         elif(reward == Map.DANGER.get_reward()):
             self.episode_rewards.append([Map.DANGER.name, self.episode_reward])
             self.episode_reward = 0
+            self.deaths += 1
 
         time.sleep(0.05)
         self.step_tachometers.append(time.time() - self.step_tachometer - 0.05)
@@ -68,7 +72,7 @@ class Shell():
 
     def plot_global_reward(self, team):
         rewards_value = list(map(lambda x: x[1], self.episode_rewards))
-        plt.subplot(2, 1, 1)
+        plt.subplot(2, 2, 1)
         plt.title(team)
         plt.plot(rewards_value, '-k', linewidth=0.5)
         for index, reward in enumerate(self.episode_rewards):
@@ -80,18 +84,25 @@ class Shell():
         plt.xlabel('Episodes')
 
     def plot_tachometers(self):
-        plt.subplot(2, 1, 2)
+        plt.subplot(2, 2, 2)
         plt.plot(self.step_tachometers, '-k', linewidth=0.5)
         plt.ylabel('Execution Duration')
         plt.xlabel('Player Steps')
 
+    def plot_kda(self):
+        plt.subplot(2, 2, 3)
+        bar = plt.barh(["Wins", "Deaths"], [self.wins, self.deaths])
+        bar[0].set_color('g')
+        bar[1].set_color('r')
+
     def show_plots(self, team):
         self.plot_global_reward(team)
         self.plot_tachometers()
+        self.plot_kda()
         plt.show()
 
     def mainloop(self, blue, red):
-        iterations = 10
+        iterations = 100
         if blue:
             print("## BLUE ##")
             BLUE(self.env).learn(iterations, self.display)
