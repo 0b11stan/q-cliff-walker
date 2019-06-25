@@ -66,8 +66,10 @@ class Shell():
         print("action: {}".format(action.name))
         print("done: {}".format(done))
 
-    def plot_global_reward(self):
+    def plot_global_reward(self, team):
         rewards_value = list(map(lambda x: x[1], self.episode_rewards))
+        plt.subplot(2, 1, 1)
+        plt.title(team)
         plt.plot(rewards_value, '-k', linewidth=0.5)
         for index, reward in enumerate(self.episode_rewards):
             if(reward[0] == Map.GOAL.name):
@@ -76,24 +78,27 @@ class Shell():
                 plt.plot(index, reward[1], 'rv')
         plt.ylabel('Score')
         plt.xlabel('Episodes')
-        plt.show()
 
     def plot_tachometers(self):
+        plt.subplot(2, 1, 2)
         plt.plot(self.step_tachometers, '-k', linewidth=0.5)
         plt.ylabel('Execution Duration')
         plt.xlabel('Player Steps')
+
+    def show_plots(self, team):
+        self.plot_global_reward(team)
+        self.plot_tachometers()
         plt.show()
 
     def mainloop(self, blue, red):
+        iterations = 10
         if blue:
             print("## BLUE ##")
-            BLUE(self.env).learn(100, self.display)
-            self.plot_global_reward()
-            self.plot_tachometers()
+            BLUE(self.env).learn(iterations, self.display)
+            self.show_plots("BLUE")
         elif red:
             print("## RED ##")
-            RED(self.env).learn(100, self.display)
-            self.plot_global_reward()
-            self.plot_tachometers()
+            RED(self.env).learn(iterations, self.display)
+            self.show_plots("RED")
         else:
             exit("No team provided")
