@@ -23,59 +23,7 @@
 import numpy as np
 import random
 
-from environment import Action, Map, Environment, get_state
-
-landform_0 = [
-            [Map.LAND, Map.START, Map.LAND,   Map.DANGER],
-            [Map.LAND, Map.LAND,  Map.LAND,   Map.LAND],
-            [Map.LAND, Map.LAND,  Map.LAND, Map.LAND],
-            [Map.LAND, Map.LAND,  Map.LAND, Map.LAND],
-            [Map.LAND, Map.LAND,  Map.LAND,   Map.LAND],
-            [Map.LAND, Map.LAND,  Map.LAND,   Map.DANGER],
-            [Map.GOAL, Map.LAND,  Map.LAND,   Map.DANGER]
-        ]
-
-playground_0 = [
-    ["START", "LAND", "LAND", "LAND"],
-    ["DANGER", "DANGER", "DANGER", "LAND"],
-    ["DANGER", "DANGER", "DANGER", "GOAL"],
-]
-
-playground_1 = [
-    ["DANGER", "START", "DANGER", "DANGER"],
-    ["DANGER", "LAND", "LAND", "LAND"],
-    ["DANGER", "DANGER", "DANGER", "LAND"],
-    ["DANGER", "DANGER", "DANGER", "LAND"],
-    ["DANGER", "DANGER", "LAND", "LAND"],
-    ["DANGER", "DANGER", "LAND", "DANGER"],
-    ["GOAL", "LAND", "LAND", "DANGER"]
-]
-
-playground_2 = [
-    ['START', 'LAND', 'LAND'],
-    ['LAND', 'DANGER', 'LAND'],
-    ['LAND', 'GOAL', 'LAND'],
-    ['DANGER', 'DANGER', 'LAND'],
-    ['DANGER', 'LAND', 'LAND'],
-]
-
-playground_3 = [
-    ['LAND', 'LAND', 'LAND', 'LAND', 'LAND', 'LAND', 'LAND', 'LAND'],
-    ['LAND', 'LAND', 'LAND', 'LAND', 'LAND', 'LAND', 'LAND', 'LAND'],
-    ['LAND', 'LAND', 'LAND', 'LAND', 'LAND', 'LAND', 'LAND', 'LAND'],
-    ['START', 'DANGER', 'DANGER', 'DANGER', 'DANGER', 'DANGER', 'DANGER', 'GOAL'],
-]
-
-
-def get_reward_for_cell(cell_content):
-    if cell_content == "DANGER":
-        return -10
-    elif cell_content == "GOAL":
-        return 10
-    elif cell_content == "LAND":
-        return -1
-    elif cell_content == "START":
-        return -1
+from environment import Action, Map, Environment, get_state, plot_global_award
 
 
 def calculate_reward_matrix(playground):
@@ -152,16 +100,6 @@ def calculate_valid_actions_matrix(transition_matrix):
         valid_actions_matrix.append(valid_action_row)
     return valid_actions_matrix
 
-
-def print_matrix(reward_matrix, matrix_name):
-    print("########################################")
-    print("#######  " + matrix_name + "  MATRIX     ###########")
-    print("########################################")
-    for i in range(0, len(reward_matrix)):
-        print(reward_matrix[i])
-    print("########################################")
-
-
 def get_lava_states_matrix(playground):
     lava_states_matrix = []
     for i in range(0, len(playground)):
@@ -193,66 +131,60 @@ def get_flat_matrix(matrix):
         flat_matrix.append(matrix[i])
     return flat_matrix
 
-def get_next_action(state, flat_reward_matrix, calculated_valid_actions_matrix, random_choice_rate=0.1):
+def get_next_action(state, flat_q_matrix, calculated_valid_actions_matrix, random_choice_rate=0.1):
     if(np.random.random() < random_choice_rate):
         return random.choice(calculated_valid_actions_matrix[state])
     else:
-        max_val = max(flat_reward_matrix[state])
-        indexes = [index for index, x in enumerate(flat_reward_matrix[state]) if x == max_val]
+        max_val = max(flat_q_matrix[state])
+        indexes = [index for index, x in enumerate(flat_q_matrix[state]) if x == max_val]
         index = random.choice(indexes)
-        #index = flat_reward_matrix[state].index(max(flat_reward_matrix[state]))
-
         if(index in calculated_valid_actions_matrix[state]):
             return index
         else:
             return random.choice(calculated_valid_actions_matrix[state])
 
-
-
-
-
-#calculated_reward_matrix = calculate_reward_matrix(landform_0)
-#calculated_flat_reward_matrix = get_flat_matrix(calculated_reward_matrix)
-#calculated_transition_matrix = calculate_transition_matrix(landform_0)
-#calculated_valid_actions_matrix = calculate_valid_actions_matrix(calculated_transition_matrix)
-#calculated_lava_states_matrix = get_lava_states_matrix(landform_0)
-#calculated_goal_states_matrix = get_goal_states_matrix(landform_0)
-#
-#print_matrix(calculated_reward_matrix, "REWARD")
-#print_matrix(calculated_transition_matrix, "TRANSITION")
-#print_matrix(calculated_valid_actions_matrix, "VALID ACTIONS")
-# replace 32 by number of cells
-# 4 is the number of possible states
-def launch_qlearning(env, display, calculated_reward_matrix, calculated_transition_matrix, calculated_valid_actions_matrix, calculated_lava_states_matrix, calculated_goal_states_matrix, calculated_flat_reward_matrix):
+def launch_qlearning(
+        env,
+        steps,
+        display,
+        calculated_reward_matrix,
+        calculated_transition_matrix,
+        calculated_valid_actions_matrix,
+        calculated_lava_states_matrix,
+        calculated_goal_states_matrix
+):
+    # Iinitalisation de la qmatrix avec des 0
+    # (Nombres de cases sur la carte, nombre d'actions possibles)
     q_matrix = np.zeros((env.COLS * env.ROWS, 4))
-
     gamma = 0.8
-
-    episodes = 1000
-
-    for i in range(episodes):
+    global_rewards = []
+    for i in range(steps):
         env.reset()
-        # replace starting state depending on playground (TODO code function to automate it)
         start_state = get_state(env.position, env.COLS)
         future_rewards = []
         current_state = start_state
-        # While diamond not found
+        global_reward = 0
+        # While diamond or lava not found
         while not is_lava_or_goal(current_state, calculated_lava_states_matrix, calculated_goal_states_matrix):
             action = get_next_action(current_state, get_flat_matrix(q_matrix), calculated_valid_actions_matrix)
-            #action = random.choice(calculated_valid_actions_matrix[current_state])
             next_state = calculated_transition_matrix[current_state][action]
             future_rewards.append(q_matrix[next_state][get_next_action(next_state, get_flat_matrix(q_matrix), calculated_valid_actions_matrix)])
+            # Bellman Equation
             q_state = calculated_reward_matrix[current_state][action] + gamma * max(future_rewards)
             q_matrix[current_state][action] = q_state
             reward, done = env.step(Action(action))
             display(calculated_reward_matrix[current_state][action], Action(action), done, "## {} ##".format(i))
-            #print(i)
-            #print(q_matrix)
             current_state = next_state
+            global_reward += reward
+            if done:
+                if(reward == 0):
+                    global_rewards.append(['d', global_reward])
+                elif(reward == -100):
+                    global_rewards.append(['l', global_reward])
 
 
     print("Final q_matrix : ")
     print(q_matrix)
+    print(global_rewards)
+    plot_global_award(global_rewards)
 
-
-#launch_qlearning(calculated_reward_matrix, calculated_transition_matrix, calculated_valid_actions_matrix)

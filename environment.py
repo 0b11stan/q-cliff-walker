@@ -1,5 +1,5 @@
 from enum import Enum, unique
-
+import matplotlib.pyplot as plt
 
 def fill_row(length, row, land):
     while len(row) < length:
@@ -19,6 +19,20 @@ def get_state(coordinates, cols):
     X, Y = 0, 1
     return coordinates[X] + (coordinates[Y] * cols)
 
+def plot_global_award(awards):
+    awards_value = list(map(lambda x: x[1], awards))
+    plt.plot(awards_value, '-k', linewidth=0.5)
+
+    for index,award in enumerate(awards):
+        if(award[0] == 'd'):
+            plt.plot(index, award[1], 'g^')
+        elif(award[0] == 'l'):
+            plt.plot(index, award[1], 'rv')
+
+    plt.ylabel('Score')
+    plt.ylabel('Steps')
+    plt.show()
+
 
 @unique
 class Map(Enum):
@@ -33,7 +47,7 @@ class Map(Enum):
         elif self == self.START:
             return -1
         elif self == self.GOAL:
-            return 100
+            return 0
         elif self == self.DANGER:
             return -100
 
