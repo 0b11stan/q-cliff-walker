@@ -1,4 +1,6 @@
 import os
+import time
+import matplotlib.pyplot as plt
 
 from environment import Map, Environment
 from redteam.ai import AI as RED
@@ -10,19 +12,29 @@ class Shell():
         self.landform = [
             [Map.LAND, Map.START, Map.LAND,   Map.DANGER],
             [Map.LAND, Map.LAND,  Map.LAND,   Map.LAND],
-            [Map.LAND, Map.LAND,  Map.LAND, Map.LAND],
-            [Map.LAND, Map.LAND,  Map.LAND, Map.LAND],
+            [Map.LAND, Map.DANGER,  Map.DANGER, Map.LAND],
+            [Map.LAND, Map.DANGER,  Map.DANGER, Map.LAND],
             [Map.LAND, Map.LAND,  Map.LAND,   Map.LAND],
             [Map.LAND, Map.LAND,  Map.LAND,   Map.DANGER],
             [Map.GOAL, Map.LAND,  Map.LAND,   Map.DANGER]
         ]
         self.env = Environment(self.landform)
         self.position = [0, 0]
+        self.step_reward = 0
+        self.step_rewards = []
 
     def display(self, reward, action, done, title="## MAP ##"):
         os.system("clear")
         self.display_landform(reward, action, done, title)
-        import time
+
+        self.step_reward += reward
+        if(reward == Map.GOAL.get_reward()):
+            self.step_rewards.append([Map.GOAL.name, self.step_reward])
+            self.step_reward = 0
+        elif(reward == Map.DANGER.get_reward()):
+            self.step_rewards.append([Map.DANGER.name, self.step_reward])
+            self.step_reward = 0
+
         time.sleep(0.05)
 
     def display_landform(self, reward, action, done, title):
@@ -50,10 +62,26 @@ class Shell():
         print("action: {}".format(action.name))
         print("done: {}".format(done))
 
+    def plot_global_reward(self):
+        rewards_value = list(map(lambda x: x[1], self.step_rewards))
+        plt.plot(rewards_value, '-k', linewidth=0.5)
+        for index, reward in enumerate(self.step_rewards):
+            if(reward[0] == Map.GOAL.name):
+                plt.plot(index, reward[1], 'g^')
+            elif(reward[0] == Map.DANGER.name):
+                plt.plot(index, reward[1], 'rv')
+        plt.ylabel('Score')
+        plt.ylabel('Steps')
+        plt.show()
+
     def mainloop(self, blue, red):
         if blue:
-            print ("## BLUE ##")
+            print("## BLUE ##")
             BLUE(self.env).learn(100, self.display)
-        if red:
-            print ("## RED ##")
-            RED(self.env).learn(1000, self.display)
+            self.plot_global_reward()
+        elif red:
+            print("## RED ##")
+            RED(self.env).learn(100, self.display)
+            self.plot_global_reward()
+        else:
+            exit("No team provided")

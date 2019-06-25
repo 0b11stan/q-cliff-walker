@@ -1,5 +1,5 @@
 from enum import Enum, unique
-import matplotlib.pyplot as plt
+
 
 def fill_row(length, row, land):
     while len(row) < length:
@@ -15,21 +15,10 @@ def get_max_rows(landform):
 def get_max_cols(landform):
     return max([len(row) for row in landform])
 
+
 def get_state(coordinates, cols):
     X, Y = 0, 1
     return coordinates[X] + (coordinates[Y] * cols)
-
-def plot_global_award(awards):
-    awards_value = list(map(lambda x: x[1], awards))
-    plt.plot(awards_value, '-k', linewidth=0.5)
-    for index,award in enumerate(awards):
-        if(award[0] == Map.GOAL.name):
-            plt.plot(index, award[1], 'g^')
-        elif(award[0] == Map.DANGER.name):
-            plt.plot(index, award[1], 'rv')
-    plt.ylabel('Score')
-    plt.ylabel('Steps')
-    plt.show()
 
 
 @unique
@@ -87,7 +76,6 @@ class Environment():
         self.ROWS = get_max_rows(self.landform)
         self.COLS = get_max_cols(self.landform)
         self.reset()
-
 
     def _register_common_positions(self, land, x, y):
         if land == Map.START:

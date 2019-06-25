@@ -23,7 +23,7 @@
 import numpy as np
 import random
 
-from environment import Action, Map, Environment, get_state, plot_global_award
+from environment import Action, Map, Environment, get_state
 
 
 def calculate_reward_matrix(playground):
@@ -161,13 +161,11 @@ def launch_qlearning(
     # (Nombres de cases sur la carte, nombre d'actions possibles)
     q_matrix = np.zeros((env.COLS * env.ROWS, 4))
     gamma = 0.8
-    global_rewards = []
     for step in range(steps):
         env.reset()
         start_state = get_state(env.position, env.COLS)
         future_rewards = []
         current_state = start_state
-        global_reward = 0
         # While diamond or lava not found
         while not is_lava_or_goal(current_state, calculated_lava_states_matrix, calculated_goal_states_matrix):
             action = get_next_action(current_state, get_flat_matrix(q_matrix), calculated_valid_actions_matrix, (steps/(step+1)))
@@ -179,16 +177,6 @@ def launch_qlearning(
             reward, done = env.step(Action(action))
             display(calculated_reward_matrix[current_state][action], Action(action), done, "## {} ##".format(step))
             current_state = next_state
-            global_reward += reward
-            if done:
-                if(reward == Map.GOAL.get_reward()):
-                    global_rewards.append([Map.GOAL.name, global_reward])
-                elif(reward == Map.DANGER.get_reward()):
-                    global_rewards.append([Map.DANGER.name, global_reward])
-
 
     #print("Final q_matrix : ")
     #print(q_matrix)
-    #print(global_rewards)
-    plot_global_award(global_rewards)
-
