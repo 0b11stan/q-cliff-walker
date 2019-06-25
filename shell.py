@@ -22,6 +22,8 @@ class Shell():
         self.position = [0, 0]
         self.episode_reward = 0
         self.episode_rewards = []
+        self.step_tachometer = time.time()
+        self.step_tachometers = []
 
     def display(self, reward, action, done, title="## MAP ##"):
         os.system("clear")
@@ -36,6 +38,8 @@ class Shell():
             self.episode_reward = 0
 
         time.sleep(0.05)
+        self.step_tachometers.append(time.time() - self.step_tachometer - 0.05)
+        self.step_tachometer = time.time()
 
     def display_landform(self, reward, action, done, title):
         col_num = (self.env.COLS * 2) - 1
@@ -74,14 +78,22 @@ class Shell():
         plt.xlabel('Episodes')
         plt.show()
 
+    def plot_tachometers(self):
+        plt.plot(self.step_tachometers, '-k', linewidth=0.5)
+        plt.ylabel('Execution Duration')
+        plt.xlabel('Player Steps')
+        plt.show()
+
     def mainloop(self, blue, red):
         if blue:
             print("## BLUE ##")
             BLUE(self.env).learn(100, self.display)
             self.plot_global_reward()
+            self.plot_tachometers()
         elif red:
             print("## RED ##")
             RED(self.env).learn(100, self.display)
             self.plot_global_reward()
+            self.plot_tachometers()
         else:
             exit("No team provided")
