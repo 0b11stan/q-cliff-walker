@@ -29,7 +29,7 @@ class Map(Enum):
         elif self == self.START:
             return -1
         elif self == self.GOAL:
-            return 0
+            return 100
         elif self == self.DANGER:
             return -100
 
