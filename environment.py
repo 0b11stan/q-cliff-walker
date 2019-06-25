@@ -22,13 +22,11 @@ def get_state(coordinates, cols):
 def plot_global_award(awards):
     awards_value = list(map(lambda x: x[1], awards))
     plt.plot(awards_value, '-k', linewidth=0.5)
-
     for index,award in enumerate(awards):
-        if(award[0] == 'd'):
+        if(award[0] == Map.GOAL.name):
             plt.plot(index, award[1], 'g^')
-        elif(award[0] == 'l'):
+        elif(award[0] == Map.DANGER.name):
             plt.plot(index, award[1], 'rv')
-
     plt.ylabel('Score')
     plt.ylabel('Steps')
     plt.show()

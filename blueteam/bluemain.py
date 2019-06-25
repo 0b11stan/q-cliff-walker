@@ -177,10 +177,10 @@ def launch_qlearning(
             current_state = next_state
             global_reward += reward
             if done:
-                if(reward == 0):
-                    global_rewards.append(['d', global_reward])
-                elif(reward == -100):
-                    global_rewards.append(['l', global_reward])
+                if(reward == Map.GOAL.get_reward()):
+                    global_rewards.append([Map.GOAL.name, global_reward])
+                elif(reward == Map.DANGER.get_reward()):
+                    global_rewards.append([Map.DANGER.name, global_reward])
 
 
     print("Final q_matrix : ")
