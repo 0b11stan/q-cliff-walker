@@ -1,7 +1,7 @@
 import os
 
 from environment import Map, Environment
-from ai import AI
+from redteam.ai import AI
 
 
 class Shell():
