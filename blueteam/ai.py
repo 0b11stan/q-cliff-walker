@@ -16,6 +16,7 @@ class AI():
     def learn(self, steps, display=None):
         launch_qlearning(
                 self.env,
+                display,
                 self.calculated_reward_matrix,
                 self.calculated_transition_matrix,
                 self.calculated_valid_actions_matrix,

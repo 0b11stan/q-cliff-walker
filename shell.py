@@ -19,14 +19,15 @@ class Shell():
         self.env = Environment(self.landform)
         self.position = [0, 0]
 
-    def display(self, reward, action):
+    def display(self, reward, action, done, title="## MAP ##"):
         os.system("clear")
-        self.display_landform(reward, action)
+        self.display_landform(reward, action, done, title)
         import time
-        time.sleep(0.2)
+        #time.sleep(0.2)
 
-    def display_landform(self, reward, action):
+    def display_landform(self, reward, action, done, title):
         col_num = (self.env.COLS * 2) - 1
+        print(title)
         print("+{}+".format("-" * col_num))
         for y, row in enumerate(self.env.landform):
             to_display = ""
@@ -47,6 +48,8 @@ class Shell():
         print("+{}+".format("-" * col_num))
         print("reward: {}".format(reward))
         print("action: {}".format(action.name))
+        print("done: {}".format(done))
+        if reward == 100: exit("win")
 
     def mainloop(self, blue, red):
         if blue:

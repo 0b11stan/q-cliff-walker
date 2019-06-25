@@ -23,7 +23,7 @@
 import numpy as np
 import random
 
-from environment import Map, Environment, get_state
+from environment import Action, Map, Environment, get_state
 
 landform_0 = [
             [Map.LAND, Map.START, Map.LAND,   Map.DANGER],
@@ -219,7 +219,7 @@ def get_next_action(state, flat_reward_matrix, calculated_valid_actions_matrix, 
 #print_matrix(calculated_valid_actions_matrix, "VALID ACTIONS")
 # replace 32 by number of cells
 # 4 is the number of possible states
-def launch_qlearning(env, calculated_reward_matrix, calculated_transition_matrix, calculated_valid_actions_matrix, calculated_lava_states_matrix, calculated_goal_states_matrix, calculated_flat_reward_matrix):
+def launch_qlearning(env, display, calculated_reward_matrix, calculated_transition_matrix, calculated_valid_actions_matrix, calculated_lava_states_matrix, calculated_goal_states_matrix, calculated_flat_reward_matrix):
     q_matrix = np.zeros((env.COLS * env.ROWS, 4))
 
     gamma = 0.8
@@ -227,6 +227,7 @@ def launch_qlearning(env, calculated_reward_matrix, calculated_transition_matrix
     episodes = 1000
 
     for i in range(episodes):
+        env.reset()
         # replace starting state depending on playground (TODO code function to automate it)
         start_state = get_state(env.position, env.COLS)
         current_state = start_state
@@ -240,9 +241,12 @@ def launch_qlearning(env, calculated_reward_matrix, calculated_transition_matrix
                 future_rewards.append(q_matrix[next_state][next_action])
             q_state = calculated_reward_matrix[current_state][action] + gamma * max(future_rewards)
             q_matrix[current_state][action] = q_state
-            print(i)
-            print(q_matrix)
+            reward, done = env.step(Action(action))
+            display(calculated_reward_matrix[current_state][action], Action(action), done, "## {} ##".format(i))
+            #print(i)
+            #print(q_matrix)
             current_state = next_state
+
 
     print("Final q_matrix : ")
     print(q_matrix)
