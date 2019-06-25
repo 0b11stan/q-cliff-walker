@@ -34,5 +34,4 @@ class AI():
             return Action.all()[np.argmax(self.qvalues[self.get_state()])]
 
     def get_state(self):
-        X, Y = 0, 1
-        return self.env.position[X] + (self.env.position[Y] * self.env.COLS)
+        return environment.get_state(self.env.position, self.env.COLS)

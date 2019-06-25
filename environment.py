@@ -15,6 +15,10 @@ def get_max_rows(landform):
 def get_max_cols(landform):
     return max([len(row) for row in landform])
 
+def get_state(coordinates, cols):
+    X, Y = 0, 1
+    return coordinates[X] + (coordinates[Y] * cols)
+
 
 @unique
 class Map(Enum):
@@ -71,6 +75,7 @@ class Environment():
         self.ROWS = get_max_rows(self.landform)
         self.COLS = get_max_cols(self.landform)
         self.reset()
+
 
     def _register_common_positions(self, land, x, y):
         if land == Map.START:
