@@ -4,20 +4,12 @@ import click
 from shell import Shell
 
 
-@click.group()
-def cli():
-    pass
-
-
-@cli.command()
-#@cli.option('--blue', is_flag=True)
-#@cli.option('--red', is_flag=True)
-def shell():
+@click.command()
+@click.option('--blue', is_flag=True)
+@click.option('--red', is_flag=True)
+def cli(blue, red):
     app = Shell()
-    # blue
-    app.mainloop(True, False)
-    # red
-    #app.mainloop(False, True)
+    app.mainloop(blue, red)
 
 if __name__ == '__main__':
     cli()
