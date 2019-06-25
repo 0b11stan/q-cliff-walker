@@ -12,8 +12,8 @@ class AI():
         num_actions = len(Action.all())
         self.qvalues = np.zeros((num_states, num_actions))
 
-    def learn(self, steps, display=None):
-        for step in range(steps):
+    def learn(self, episodes, display=None):
+        for step in range(episodes):
             self.env.reset()
             done = False
             while not done:

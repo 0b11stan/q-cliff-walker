@@ -11,10 +11,10 @@ class AI():
         self.calculated_lava_states_matrix = get_lava_states_matrix(env.landform)
         self.calculated_goal_states_matrix = get_goal_states_matrix(env.landform)
 
-    def learn(self, steps, display=None):
+    def learn(self, episodes, display=None):
         launch_qlearning(
                 self.env,
-                steps,
+                episodes,
                 display,
                 self.calculated_reward_matrix,
                 self.calculated_transition_matrix,

@@ -20,20 +20,20 @@ class Shell():
         ]
         self.env = Environment(self.landform)
         self.position = [0, 0]
-        self.step_reward = 0
-        self.step_rewards = []
+        self.episode_reward = 0
+        self.episode_rewards = []
 
     def display(self, reward, action, done, title="## MAP ##"):
         os.system("clear")
         self.display_landform(reward, action, done, title)
 
-        self.step_reward += reward
+        self.episode_reward += reward
         if(reward == Map.GOAL.get_reward()):
-            self.step_rewards.append([Map.GOAL.name, self.step_reward])
-            self.step_reward = 0
+            self.episode_rewards.append([Map.GOAL.name, self.episode_reward])
+            self.episode_reward = 0
         elif(reward == Map.DANGER.get_reward()):
-            self.step_rewards.append([Map.DANGER.name, self.step_reward])
-            self.step_reward = 0
+            self.episode_rewards.append([Map.DANGER.name, self.episode_reward])
+            self.episode_reward = 0
 
         time.sleep(0.05)
 
@@ -63,15 +63,15 @@ class Shell():
         print("done: {}".format(done))
 
     def plot_global_reward(self):
-        rewards_value = list(map(lambda x: x[1], self.step_rewards))
+        rewards_value = list(map(lambda x: x[1], self.episode_rewards))
         plt.plot(rewards_value, '-k', linewidth=0.5)
-        for index, reward in enumerate(self.step_rewards):
+        for index, reward in enumerate(self.episode_rewards):
             if(reward[0] == Map.GOAL.name):
                 plt.plot(index, reward[1], 'g^')
             elif(reward[0] == Map.DANGER.name):
                 plt.plot(index, reward[1], 'rv')
         plt.ylabel('Score')
-        plt.ylabel('Steps')
+        plt.xlabel('Episodes')
         plt.show()
 
     def mainloop(self, blue, red):

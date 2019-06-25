@@ -149,7 +149,7 @@ def get_next_action(state, flat_q_matrix, calculated_valid_actions_matrix, stepr
 
 def launch_qlearning(
         env,
-        steps,
+        episodes,
         display,
         calculated_reward_matrix,
         calculated_transition_matrix,
@@ -161,16 +161,16 @@ def launch_qlearning(
     # (Nombres de cases sur la carte, nombre d'actions possibles)
     q_matrix = np.zeros((env.COLS * env.ROWS, 4))
     gamma = 0.8
-    for step in range(steps):
+    for step in range(episodes):
         env.reset()
         start_state = get_state(env.position, env.COLS)
         future_rewards = []
         current_state = start_state
         # While diamond or lava not found
         while not is_lava_or_goal(current_state, calculated_lava_states_matrix, calculated_goal_states_matrix):
-            action = get_next_action(current_state, get_flat_matrix(q_matrix), calculated_valid_actions_matrix, (steps/(step+1)))
+            action = get_next_action(current_state, get_flat_matrix(q_matrix), calculated_valid_actions_matrix, (episodes / (step + 1)))
             next_state = calculated_transition_matrix[current_state][action]
-            future_rewards.append(q_matrix[next_state][get_next_action(next_state, get_flat_matrix(q_matrix), calculated_valid_actions_matrix, (steps/(step+1)))])
+            future_rewards.append(q_matrix[next_state][get_next_action(next_state, get_flat_matrix(q_matrix), calculated_valid_actions_matrix, (episodes / (step + 1)))])
             # Bellman Equation
             q_state = calculated_reward_matrix[current_state][action] + gamma * max(future_rewards)
             q_matrix[current_state][action] = q_state
