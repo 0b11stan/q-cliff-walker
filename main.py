@@ -7,7 +7,7 @@ from shell import Shell
 @click.command()
 @click.option('--blue', is_flag=True)
 @click.option('--red', is_flag=True)
-@click.option('--mapfile', default="maps/main")
+@click.option('--mapfile', default="maps/default")
 def cli(blue, red, mapfile):
     app = Shell(mapfile)
     app.mainloop(blue, red)
