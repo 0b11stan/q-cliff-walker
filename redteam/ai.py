@@ -13,7 +13,7 @@ class AI():
         self.qvalues = np.zeros((num_states, num_actions))
 
     def learn(self, steps, display=None):
-        for _ in range(steps):
+        for step in range(steps):
             self.env.reset()
             done = False
             while not done:
@@ -23,7 +23,7 @@ class AI():
                 current_qvalues = self.qvalues[self.get_state()]
                 previous_qvalues[action.value] = reward + \
                     (self.longterm_satisfaction_bias * np.max(current_qvalues))
-                display(reward, action, done)
+                display(reward, action, done, title="## {} ##".format(step))
 
     def choose_action(self):
         if np.random.random() < self.endeavours_bias:

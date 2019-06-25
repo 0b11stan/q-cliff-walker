@@ -16,9 +16,9 @@ def cli():
 def shell():
     app = Shell()
     # blue
-    #app.mainloop(True, False)
+    app.mainloop(True, False)
     # red
-    app.mainloop(False, True)
+    #app.mainloop(False, True)
 
 
 @cli.command()

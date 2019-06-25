@@ -23,7 +23,7 @@ class Shell():
         os.system("clear")
         self.display_landform(reward, action, done, title)
         import time
-        #time.sleep(0.2)
+        time.sleep(0.05)
 
     def display_landform(self, reward, action, done, title):
         col_num = (self.env.COLS * 2) - 1
@@ -49,7 +49,6 @@ class Shell():
         print("reward: {}".format(reward))
         print("action: {}".format(action.name))
         print("done: {}".format(done))
-        if reward == 100: exit("win")
 
     def mainloop(self, blue, red):
         if blue:
@@ -57,4 +56,4 @@ class Shell():
             BLUE(self.env).learn(100, self.display)
         if red:
             print ("## RED ##")
-            RED(self.env).learn(100, self.display)
+            RED(self.env).learn(1000, self.display)

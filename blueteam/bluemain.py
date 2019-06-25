@@ -197,7 +197,11 @@ def get_next_action(state, flat_reward_matrix, calculated_valid_actions_matrix, 
     if(np.random.random() < random_choice_rate):
         return random.choice(calculated_valid_actions_matrix[state])
     else:
-        index = flat_reward_matrix[state].index(max(flat_reward_matrix[state]))
+        max_val = max(flat_reward_matrix[state])
+        indexes = [index for index, x in enumerate(flat_reward_matrix[state]) if x == max_val]
+        index = random.choice(indexes)
+        #index = flat_reward_matrix[state].index(max(flat_reward_matrix[state]))
+
         if(index in calculated_valid_actions_matrix[state]):
             return index
         else:
@@ -230,15 +234,14 @@ def launch_qlearning(env, display, calculated_reward_matrix, calculated_transiti
         env.reset()
         # replace starting state depending on playground (TODO code function to automate it)
         start_state = get_state(env.position, env.COLS)
+        future_rewards = []
         current_state = start_state
         # While diamond not found
         while not is_lava_or_goal(current_state, calculated_lava_states_matrix, calculated_goal_states_matrix):
-            action = get_next_action(current_state, calculated_flat_reward_matrix, calculated_valid_actions_matrix)
+            action = get_next_action(current_state, get_flat_matrix(q_matrix), calculated_valid_actions_matrix)
             #action = random.choice(calculated_valid_actions_matrix[current_state])
             next_state = calculated_transition_matrix[current_state][action]
-            future_rewards = []
-            for next_action in calculated_valid_actions_matrix[next_state]:
-                future_rewards.append(q_matrix[next_state][next_action])
+            future_rewards.append(q_matrix[next_state][get_next_action(next_state, get_flat_matrix(q_matrix), calculated_valid_actions_matrix)])
             q_state = calculated_reward_matrix[current_state][action] + gamma * max(future_rewards)
             q_matrix[current_state][action] = q_state
             reward, done = env.step(Action(action))
