@@ -131,7 +131,11 @@ def get_flat_matrix(matrix):
         flat_matrix.append(matrix[i])
     return flat_matrix
 
-def get_next_action(state, flat_q_matrix, calculated_valid_actions_matrix, random_choice_rate=0.1):
+def get_next_action(state, flat_q_matrix, calculated_valid_actions_matrix, stepratio, random_choice_rate=0.1):
+    if(stepratio <= 1.3):
+        random_choice_rate /= 4
+    elif(stepratio <= 2 ):
+        random_choice_rate /= 2
     if(np.random.random() < random_choice_rate):
         return random.choice(calculated_valid_actions_matrix[state])
     else:
@@ -158,7 +162,7 @@ def launch_qlearning(
     q_matrix = np.zeros((env.COLS * env.ROWS, 4))
     gamma = 0.8
     global_rewards = []
-    for i in range(steps):
+    for step in range(steps):
         env.reset()
         start_state = get_state(env.position, env.COLS)
         future_rewards = []
@@ -166,14 +170,14 @@ def launch_qlearning(
         global_reward = 0
         # While diamond or lava not found
         while not is_lava_or_goal(current_state, calculated_lava_states_matrix, calculated_goal_states_matrix):
-            action = get_next_action(current_state, get_flat_matrix(q_matrix), calculated_valid_actions_matrix)
+            action = get_next_action(current_state, get_flat_matrix(q_matrix), calculated_valid_actions_matrix, (steps/(step+1)))
             next_state = calculated_transition_matrix[current_state][action]
-            future_rewards.append(q_matrix[next_state][get_next_action(next_state, get_flat_matrix(q_matrix), calculated_valid_actions_matrix)])
+            future_rewards.append(q_matrix[next_state][get_next_action(next_state, get_flat_matrix(q_matrix), calculated_valid_actions_matrix, (steps/(step+1)))])
             # Bellman Equation
             q_state = calculated_reward_matrix[current_state][action] + gamma * max(future_rewards)
             q_matrix[current_state][action] = q_state
             reward, done = env.step(Action(action))
-            display(calculated_reward_matrix[current_state][action], Action(action), done, "## {} ##".format(i))
+            display(calculated_reward_matrix[current_state][action], Action(action), done, "## {} ##".format(step))
             current_state = next_state
             global_reward += reward
             if done:
@@ -183,8 +187,8 @@ def launch_qlearning(
                     global_rewards.append([Map.DANGER.name, global_reward])
 
 
-    print("Final q_matrix : ")
-    print(q_matrix)
-    print(global_rewards)
+    #print("Final q_matrix : ")
+    #print(q_matrix)
+    #print(global_rewards)
     plot_global_award(global_rewards)
 
