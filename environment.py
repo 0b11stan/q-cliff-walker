@@ -28,6 +28,23 @@ class Map(Enum):
     GOAL = 2
     DANGER = 3
 
+    def load_map(filename):
+        built_map = []
+        with open(filename, 'r') as f:
+            for line in f:
+                row = []
+                for char in line:
+                    if char == Map.DANGER.name[:1]:
+                        row.append(Map.DANGER)
+                    elif char == Map.GOAL.name[:1]:
+                        row.append(Map.GOAL)
+                    elif char == Map.LAND.name[:1]:
+                        row.append(Map.LAND)
+                    elif char == Map.START.name[:1]:
+                        row.append(Map.START)
+                built_map.append(row)
+        return built_map
+
     def get_reward(self):
         if self == self.LAND:
             return -1

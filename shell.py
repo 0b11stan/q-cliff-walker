@@ -8,16 +8,8 @@ from blueteam.ai import AI as BLUE
 
 
 class Shell():
-    def __init__(self):
-        self.landform = [
-            [Map.LAND, Map.START, Map.LAND,   Map.DANGER],
-            [Map.LAND, Map.LAND,  Map.LAND,   Map.LAND],
-            [Map.LAND, Map.DANGER,  Map.DANGER, Map.LAND],
-            [Map.LAND, Map.DANGER,  Map.DANGER, Map.LAND],
-            [Map.LAND, Map.LAND,  Map.LAND,   Map.LAND],
-            [Map.LAND, Map.LAND,  Map.LAND,   Map.DANGER],
-            [Map.GOAL, Map.LAND,  Map.LAND,   Map.DANGER]
-        ]
+    def __init__(self, filename):
+        self.landform = Map.load_map(filename)
         self.env = Environment(self.landform)
         self.position = [0, 0]
         self.episode_reward = 0
@@ -28,9 +20,9 @@ class Shell():
         self.wins = 0
 
     def display(self, reward, action, done, title="## MAP ##"):
+        start = time.time()
         os.system("clear")
         self.display_landform(reward, action, done, title)
-
         self.episode_reward += reward
         if(reward == Map.GOAL.get_reward()):
             self.episode_rewards.append([Map.GOAL.name, self.episode_reward])
@@ -40,9 +32,10 @@ class Shell():
             self.episode_rewards.append([Map.DANGER.name, self.episode_reward])
             self.episode_reward = 0
             self.deaths += 1
-
         time.sleep(0.05)
-        self.step_tachometers.append(time.time() - self.step_tachometer - 0.05)
+        stop = time.time()
+
+        self.step_tachometers.append(time.time() - self.step_tachometer - (stop - start))
         self.step_tachometer = time.time()
 
     def display_landform(self, reward, action, done, title):
