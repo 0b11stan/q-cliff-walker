@@ -135,7 +135,7 @@ def get_next_action(state, flat_q_matrix, calculated_valid_actions_matrix, stepr
     if(stepratio <= 1.3):
         random_choice_rate /= 8
     elif(stepratio <= 2 ):
-        random_choice_rate /= 4
+        random_choice_rate /= 2
     if(np.random.random() < random_choice_rate):
         return random.choice(calculated_valid_actions_matrix[state])
     else:
